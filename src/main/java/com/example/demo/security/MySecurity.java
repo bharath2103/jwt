@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,11 +12,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class MySecurity extends WebSecurityConfigurerAdapter{
 	
+	
+	@Autowired
+	private MyUserDetailService myUserDetailService;
+	
 	@Override
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication().withUser("user").password("user").roles("user")
-		.and()
-		.withUser("bharath").password("kumar").roles("admin");
+		auth.userDetailsService(myUserDetailService);
 	}
 
 	@Bean
@@ -23,12 +26,11 @@ public class MySecurity extends WebSecurityConfigurerAdapter{
 		return NoOpPasswordEncoder.getInstance();
 	}
 	
-	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 		.antMatchers("/**")
-		.hasRole("admin")
+		.hasRole("ADMIN")
 		.and()
 		.formLogin();
 	
